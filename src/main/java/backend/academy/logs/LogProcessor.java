@@ -1,98 +1,83 @@
-package backend.academy.logs;
-
-import java.io.IOException;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.net.URL;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.stream.Collectors;
-
-public class LogProcessor {
-
-    // Метод для чтения лог-файла из локального пути или URL
-    public List<LogEntry> readLogs(String pathOrUrl) throws IOException {
-        if (pathOrUrl.startsWith("http")) {
-            return readLogsFromUrl(pathOrUrl); // Чтение с URL
-        } else {
-            return readLogsFromFile(pathOrUrl); // Чтение с локального файла
-        }
-    }
-
-    private List<LogEntry> readLogsFromFile(String filePath) throws IOException {
-        Path path = Paths.get(filePath);
-        List<LogEntry> logs = Files.lines(path)
-            .map(LogParser::parseLogLine) // Предполагается, что LogParser умеет парсить строки лога
-            .collect(Collectors.toList());
-        return logs;
-    }
-
-    private List<LogEntry> readLogsFromUrl(String urlString) throws IOException {
-        URL url = new URL(urlString);
-        try (Scanner scanner = new Scanner(url.openStream())) {
-            List<LogEntry> logs = new ArrayList<>();
-            while (scanner.hasNextLine()) {
-                logs.add(LogParser.parseLogLine(scanner.nextLine()));
-            }
-            return logs;
-        }
-    }
-
-    // Метод для фильтрации логов по времени
-    public List<LogEntry> filterLogsByTime(List<LogEntry> logs, String from, String to) {
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
-        LocalDateTime fromDate = from != null ? LocalDateTime.parse(from, formatter) : null;
-        LocalDateTime toDate = to != null ? LocalDateTime.parse(to, formatter) : null;
-
-        return logs.stream()
-            .filter(log -> {
-                LocalDateTime logDate = LocalDateTime.parse(log.timestamp());
-                boolean isAfterFrom = fromDate == null || !logDate.isBefore(fromDate);
-                boolean isBeforeTo = toDate == null || !logDate.isAfter(toDate);
-                return isAfterFrom && isBeforeTo;
-            })
-            .collect(Collectors.toList());
-    }
-
-    // Метод для генерации отчета в Markdown
-    public String generateReport(List<LogEntry> logs, String format) {
-        LogParser logParser = new LogParser();
-        LogReader logReader = new LogReader(logParser);
-
-        LogAnalyzer logAnalyzer = new LogAnalyzer(logs);
-
-        if ("markdown".equalsIgnoreCase(format)) {
-            return ReportGenerator.generateMarkdownReport(logAnalyzer);
-//        } else if ("adoc".equalsIgnoreCase(format)) {
-//            return ReportGenerator.generateAsciiDocReport(logAnalyzer);
-        } else {
-            throw new IllegalArgumentException("Invalid format. Supported formats are: markdown, adoc");
-        }
-    }
-
-    public static void main(String[] args) {
-        LogProcessor logProcessor = new LogProcessor();
-
-        String pathOrUrl = "src/main/resources/log_files/log.log";  // Пример локального пути или URL
-        String from = "2024-08-01T00:00:00"; // Пример начальной даты
-        String to = "2024-08-31T23:59:59";   // Пример конечной даты
-        String format = "markdown"; // Формат вывода: markdown или adoc
-
-        try {
-            // Чтение логов
-            List<LogEntry> logs = logProcessor.readLogs(pathOrUrl);
-
-            // Фильтрация по времени
-            logs = logProcessor.filterLogsByTime(logs, from, to);
-
-            // Генерация отчета
-            String report = logProcessor.generateReport(logs, format);
-
-            // Вывод отчета
-            System.out.println(report);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-}
+//package backend.academy.logs;
+//
+//import backend.academy.logs.core.LogAnalyzer;
+//import backend.academy.logs.core.ReportGenerator;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
+//import java.io.IOException;
+//import java.net.URL;
+//import java.nio.file.*;
+//import java.time.LocalDate;
+//import java.time.format.DateTimeFormatter;
+//import java.util.*;
+//import java.util.stream.Stream;
+//
+//public class LogProcessor {
+//    private static final Logger LOGGER = LoggerFactory.getLogger(LogProcessor.class);
+//
+//    // Чтение логов из локального файла, URL или шаблонов пути
+//    public List<LogEntry> readLogs(String pathOrPattern) throws IOException {
+//        if (pathOrPattern.startsWith("http")) {
+//            return readLogsFromUrl(pathOrPattern);
+//        } else {
+//            return readLogsFromFiles(pathOrPattern);
+//        }
+//    }
+//
+//    private List<LogEntry> readLogsFromFiles(String pattern) throws IOException {
+//        List<LogEntry> logs = new ArrayList<>();
+//        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern);
+//        try (Stream<Path> paths = Files.walk(Paths.get("."))) {
+//            paths.filter(Files::isRegularFile)
+//                .filter(path -> matcher.matches(path.getFileName()))
+//                .forEach(path -> {
+//                    try {
+//                        logs.addAll(Files.lines(path).map(LogParser::parseLogLine).filter(Objects::nonNull).toList());
+//                    } catch (IOException e) {
+//                        System.err.println("Error reading file: " + path + ", " + e.getMessage());
+//                    }
+//                });
+//        }
+//        return logs;
+//    }
+//
+//    private List<LogEntry> readLogsFromUrl(String urlString) throws IOException {
+//        URL url = new URL(urlString);
+//        try (Scanner scanner = new Scanner(url.openStream())) {
+//            return scanner.tokens().map(LogParser::parseLogLine).filter(Objects::nonNull).toList();
+//        }
+//    }
+//
+//    public List<LogEntry> filterLogsByTime(String fromArg, String toArg) {
+//        List<LogEntry> filteredLogs = new ArrayList<>();
+//        try {
+//            DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
+//            LocalDate fromDate = LocalDate.parse(fromArg.trim(), formatter);
+//            LocalDate toDate = LocalDate.parse(toArg.trim(), formatter);
+//
+//            LOGGER.info("Parsed 'from' date: {}", fromDate);
+//            LOGGER.info("Parsed 'to' date: {}", toDate);
+//
+//            for (LogEntry log : readLogs(Config.filePath())) {
+//                LocalDate logDate = LocalDate.parse(log.timestamp());
+//                if ((logDate.isEqual(fromDate) || logDate.isAfter(fromDate)) &&
+//                    (logDate.isEqual(toDate) || logDate.isBefore(toDate))) {
+//                    filteredLogs.add(log);
+//                }
+//            }
+//        } catch (Exception e) {
+//            LOGGER.error("Error parsing dates or filtering logs: {}", e.getMessage(), e);
+//        }
+//        return filteredLogs;
+//    }
+//
+//    // Генерация отчета
+//    public String generateReport(List<LogEntry> logs, String format) {
+//        LogAnalyzer analyzer = new LogAnalyzer(logs);
+//        return switch (format.toLowerCase()) {
+//            case "markdown" -> ReportGenerator.generateMarkdownReport(analyzer);
+//            case "adoc" -> ReportGenerator.generateAsciiDocReport(analyzer);
+//            default -> throw new IllegalArgumentException("Unsupported format: " + format);
+//        };
+//    }
+//}

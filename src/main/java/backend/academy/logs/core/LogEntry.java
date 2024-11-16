@@ -1,16 +1,17 @@
-package backend.academy.logs;
+package backend.academy.logs.core;
 
 import lombok.Getter;
 import lombok.Setter;
 
-@Setter @Getter public class LogEntry {
-    private String ip;
-    private String timestamp;
-    private String request;
-    private int status;
-    private int size;
-    private String referer;
-    private String userAgent;
+@Setter @Getter
+public class LogEntry {
+    private final String ip;
+    private final String timestamp;
+    private final String request;
+    private final int status;
+    private final int size;
+    private final String referer;
+    private final String userAgent;
 
     public LogEntry(String ip, String timestamp, String request, int status, int size, String referer, String userAgent) {
         this.ip = ip;
@@ -22,4 +23,3 @@ import lombok.Setter;
         this.userAgent = userAgent;
     }
 }
-
