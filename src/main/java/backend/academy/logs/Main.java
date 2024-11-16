@@ -34,11 +34,16 @@ public class Main {
             LogReader reader = new LogReader(parser);
             LogAnalyzer analyzer = new LogAnalyzer(reader.readLogs(path));
 
-            String report = format.equals("adoc")
-                ? ReportGenerator.generateAsciiDocReport(analyzer)
-                : ReportGenerator.generateMarkdownReport(analyzer);
+            String report;
+            try {
+                report = format.equals("adoc")
+                    ? ReportGenerator.generateAsciiDocReport(analyzer)
+                    : ReportGenerator.generateMarkdownReport(analyzer);
+            } catch (NullPointerException e) {
+                report = ReportGenerator.generateMarkdownReport(analyzer);
+            }
 
-            System.out.println("\n" + report);
+                System.out.println("\n" + report);
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("Произошла ошибка: " + e.getMessage());

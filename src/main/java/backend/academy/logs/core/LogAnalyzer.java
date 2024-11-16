@@ -28,25 +28,27 @@ public class LogAnalyzer {
     }
 
 //     Расчет N-го процентиля размера ответа сервера
-//public OptionalDouble getResponseSizePercentile(int percentile) {
-//    // Проверяем на пустой список и некорректный процент
-//    if (logs.isEmpty() || percentile <= 0 || percentile > 100) {
-//        return OptionalDouble.empty(); // Возвращаем Optional.empty() для обозначения отсутствия значения
-//    }
-//
-//    // Сортируем список по убыванию размера
-//    List<Long> sortedSizes = logs.stream()
-//        .mapToLong(LogEntry::size)  // Преобразуем в поток примитивных long
-//        .sorted()  // Сортируем по возрастанию
-//        .boxed()  // Преобразуем long в Long (обертка)
-//        .toList();  // Собираем в List<Long>
-//
-//    // Рассчитываем индекс по формуле
-//    int index = (int) Math.floor((percentile / 100.0) * (sortedSizes.size() - 1));
-//
-//    // Возвращаем значение на найденном индексе
-//    return OptionalDouble.of(sortedSizes.get(index));
-//}
+    public double getResponseSizePercentile(int percentile) {
+        // Проверяем корректность ввода
+        if (logs.isEmpty() || percentile <= 0 || percentile > 100) {
+            return Double.NaN; // Возвращаем NaN как обозначение некорректного результата
+        }
+
+        // Извлекаем и сортируем размеры логов
+        List<Integer> sortedSizes = logs.stream()
+            .map(LogEntry::size) // Извлекаем размер из каждого LogEntry
+            .sorted() // Сортируем по возрастанию
+            .toList(); // Преобразуем в неизменяемый список
+
+        // Вычисляем индекс перцентиля
+        int index = (int) Math.ceil((percentile / 100.0) * sortedSizes.size()) - 1;
+
+        // Гарантируем, что индекс корректен
+        index = Math.max(0, Math.min(index, sortedSizes.size() - 1));
+
+        // Возвращаем значение размера на найденном индексе
+        return sortedSizes.get(index);
+    }
 
     // Подсчет самых частых запрашиваемых ресурсов
     public Map<String, Long> getMostFrequentResources() {

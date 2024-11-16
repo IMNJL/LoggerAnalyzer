@@ -1,10 +1,8 @@
 package backend.academy.logs.core;
 
-import backend.academy.logs.analyzer.Config;
-import backend.academy.logs.core.LogAnalyzer;
 import java.util.Map;
 import static backend.academy.logs.analyzer.CommandLineArgs.get;
-//import static backend.academy.logs.analyzer.Config.filePath;
+import static backend.academy.logs.core.LogReader.logFilesPaths;
 
 public class ReportGenerator {
 
@@ -16,14 +14,16 @@ public class ReportGenerator {
         report.append("#### Общая информация\n\n");
         report.append(String.format("| %-21s | %-16s |\n", "Метрика", "Значение"));
         report.append("|:---------------------:|-----------------:|\n");
-        report.append(String.format("| %-21s | %12s     |\n", "Файл(-ы)", get("path")));
-        report.append(String.format("| %-21s | %12s     |\n", "Начальная дата", "31.08.2024"));
-        report.append(String.format("| %-21s | %12s     |\n", "Конечная дата", "-"));
+        for (String filePath : logFilesPaths()) {
+            report.append(String.format("| %-21s | %-24s |\n", STR."Файл \{1 + logFilesPaths.indexOf(filePath)}", filePath));
+        }
+        report.append(String.format("| %-21s | %12s     |\n", "Начальная дата", get("from")));
+        report.append(String.format("| %-21s | %12s     |\n", "Конечная дата", get("to")));
         report.append(String.format("| %-21s | %,16d |\n", "Количество запросов", analyzer.getTotalRequests()));
         report.append(
             String.format("| %-21s | %,11.0f байт |\n", "Средний размер ответа", analyzer.getAverageResponseSize()));
-//        report.append(String.format("| %-21s | %,12.0f байт |\n\n", "95p размера ответа",
-//            analyzer.getResponseSizePercentile(95)));
+        report.append(String.format("| %-21s | %,12.0f байт |\n\n", "95p размера ответа",
+            analyzer.getResponseSizePercentile(95)));
 
         // Раздел: Запрашиваемые ресурсы
         report.append("\n#### Запрашиваемые ресурсы\n\n");
@@ -55,7 +55,7 @@ public class ReportGenerator {
         report.append("|===\n");
         report.append("| Метрика | Значение\n");
         report.append("|:--------|:--------\n");
-        report.append(String.format("| Файл(-ы) | %s\n", get("path")));  // Предположим, что filePath хранит путь к логам
+        report.append(String.format("| Файл(-ы)/ресурсы | %s\n", get("path")));  // Предположим, что filePath хранит путь к логам
         report.append(String.format("| Начальная дата | %s\n",
             get("from"))); // Получаем начальную дату через метод в LogAnalyzer
         report.append(String.format("| Конечная дата | %s\n",
@@ -64,8 +64,8 @@ public class ReportGenerator {
             String.format("| Количество запросов | %,d\n", analyzer.getTotalRequests())); // Количество запросов
         report.append(String.format("| Средний размер ответа | %,11.0f байт\n",
             analyzer.getAverageResponseSize())); // Средний размер ответа
-//        report.append(String.format("| 95p размера ответа | %,12.0f байт\n\n",
-//            analyzer.getResponseSizePercentile(95))); // 95-й процентиль размера ответа
+        report.append(String.format("| 95p размера ответа | %,12.0f байт\n\n",
+            analyzer.getResponseSizePercentile(95))); // 95-й процентиль размера ответа
 
         // Раздел: Запрашиваемые ресурсы
         report.append("== Запрашиваемые ресурсы\n\n");
