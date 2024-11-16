@@ -7,6 +7,8 @@ public class CommandLineArgs {
     private static final Map<String, String> argsMap = new HashMap<>();
 
     public static void parseArgs(String[] args) {
+        if (args.length < 2)
+            throw new IllegalArgumentException();
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
             if (arg.startsWith("--")) {

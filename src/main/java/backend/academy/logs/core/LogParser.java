@@ -8,7 +8,7 @@ public class LogParser {
         "^(\\S+) \\S+ \\S+ \\[(.+?)] \"(.+?)\" (\\d{3}) (\\d+) \"(.*?)\" \"(.*?)\"$"
     );
 
-    public static LogEntry parse(String logLine) {
+    public LogEntry parse(String logLine) {
         Matcher matcher = LOG_PATTERN.matcher(logLine);
         if (!matcher.matches()) return null;
 

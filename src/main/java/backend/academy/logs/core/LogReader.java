@@ -8,11 +8,10 @@ import java.io.*;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class LogReader {
     private final LogParser parser;
-    // Возвращаем список путей лог-файлов
     @Getter public static List<String> logFilesPaths = new ArrayList<>(); // Хранение путей лог-файлов
 
     public LogReader(LogParser parser) {
@@ -20,71 +19,34 @@ public class LogReader {
     }
 
     public List<LogEntry> readLogs(String filePath) throws IOException {
-        List<LogEntry> logs = new ArrayList<>();
-
-        // Если путь указывает на директорию
-        File file = new File(filePath);
-        if (file.isDirectory()) {
-            // Получаем все файлы .log в директории
-            List<File> logFiles = Files.walk(file.toPath())
-                .filter(path -> path.toString().endsWith(".log"))
-                .map(Path::toFile)
-                .collect(Collectors.toList());
-
-            logFilesPaths = logFiles.stream()
-                .map(File::toPath) // Преобразуем File в Path
-                .map(path -> path.toAbsolutePath().normalize()) // Нормализуем путь
-                .map(path -> {
-                    Path basePath = new File("src").toPath().toAbsolutePath().normalize();
-                    return basePath.relativize(path).toString(); // Преобразуем к относительному пути
-                })
-                .collect(Collectors.toList());
-
-            // Читаем каждый файл
-            for (File logFile : logFiles) {
-                logs.addAll(readFromFile(logFile.getAbsolutePath()));
+        if (new File(filePath).isDirectory()) {
+            try (Stream<Path> paths = Files.walk(Paths.get(filePath))) {
+                return paths
+                    .filter(Files::isRegularFile)
+                    .filter(path -> path.toString().endsWith(".log"))
+                    .flatMap(path -> {
+                        try {
+                            return readFromFile(path.toString()).stream();
+                        } catch (IOException e) {
+                            throw new UncheckedIOException(e);
+                        }
+                    })
+                    .toList();
             }
         } else {
-            // Если путь не директория, читаем как файл
-            logs.addAll(readFromFile(filePath));
-            logFilesPaths.add(filePath);
+            return readFromFile(filePath);
         }
-
-        return logs;
     }
 
     private List<LogEntry> readFromFile(String filePath) throws IOException {
-        BufferedReader reader;
-        String outputDir = Config.outputDir();
+        try (BufferedReader reader = filePath.startsWith("http")
+            ? new BufferedReader(new InputStreamReader(HttpFileDownloader.downloadAsStream(filePath)))
+            : new BufferedReader(new FileReader(filePath))) {
 
-        switch (getFileType(filePath)) {
-            case "URL":
-                File downloadedFile = HttpFileDownloader.download(filePath, outputDir);
-                reader = new BufferedReader(new FileReader(downloadedFile));
-                break;
-            case "FILE":
-                reader = new BufferedReader(new FileReader(filePath));
-                break;
-            default:
-                throw new IllegalArgumentException("Unsupported file type: " + filePath);
+            return reader.lines()
+                .map(parser::parse)   // Парсим каждую строку
+                .filter(log -> log != null) // Отфильтровываем null-значения
+                .toList(); // Собираем результат в список
         }
-
-        List<LogEntry> logs = new ArrayList<>();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            LogEntry log = parser.parse(line);
-            if (log != null) logs.add(log);
-        }
-        reader.close();
-        return logs;
-    }
-
-    private String getFileType(String filePath) {
-        if (filePath.startsWith("http")) {
-            return "URL";
-        } else if (new File(filePath).exists()) {
-            return "FILE";
-        }
-        return "UNKNOWN";
     }
 }
