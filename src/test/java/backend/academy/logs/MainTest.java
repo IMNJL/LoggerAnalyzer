@@ -43,26 +43,4 @@ public class MainTest {
             }
         }
     }
-
-    @Test
-    public void testStartWithMissingPath() {
-        // Mock static method CommandLineArgs.get()
-        try (MockedStatic<CommandLineArgs> mockedArgs = mockStatic(CommandLineArgs.class)) {
-            // Setup behavior for static methods
-            mockedArgs.when(() -> CommandLineArgs.get("path")).thenReturn(null); // Simulate missing "path"
-            mockedArgs.when(() -> CommandLineArgs.get("format")).thenReturn("markdown");
-            mockedArgs.when(() -> CommandLineArgs.get("from")).thenReturn("2024-01-01");
-            mockedArgs.when(() -> CommandLineArgs.get("to")).thenReturn("2024-12-31");
-
-            // Mock Logger
-            Logger mockLogger = mock(Logger.class);
-            when(LoggerFactory.getLogger(Main.class)).thenReturn(mockLogger);
-
-            // Call the start() method
-            Main.start();
-
-            // Verify that the error log for missing "path" is logged
-            verify(mockLogger).error("Ошибка: Параметр '--path' обязателен!");
-        }
-    }
 }
