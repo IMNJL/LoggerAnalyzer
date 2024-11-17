@@ -10,8 +10,8 @@ public class LogEntry {
     private final String request;
     private final int status;
     private final int size;
-    private final String referer;
-    private final String userAgent;
+    @Setter private String referer;
+    @Setter private String userAgent;
 
     public LogEntry(String ip, String timestamp,
         String request, int status,

@@ -95,6 +95,7 @@ public class LogAnalyzer {
             .distinct()
             .count();
     }
+
     public List<LogEntry> filterLogs(Predicate<LogEntry> filter) {
         return logs.stream()
             .filter(filter)

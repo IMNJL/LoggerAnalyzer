@@ -62,8 +62,10 @@ public class ReportGenerator {
 
             // Раздел доп баллы: доп функция
             writer.write("\n#### Доп. статистика\n\n");
-            writer.write(String.format("| Максимальный размер ответа | %,12d байт      |\n", analyzer.getMaxResponseSize()));
-            writer.write(String.format("| Уникальных IP-адресов      | %,d               |\n", analyzer.getUniqueIpCount()));
+            writer.write(String.format("| Максимальный размер ответа | %,12d байт      |\n", analyzer
+                .getMaxResponseSize()));
+            writer.write(String.format("| Уникальных IP-адресов      | %,d               |\n", analyzer
+                .getUniqueIpCount()));
         }
     }
 

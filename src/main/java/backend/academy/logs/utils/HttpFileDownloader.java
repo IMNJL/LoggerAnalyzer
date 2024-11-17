@@ -31,7 +31,7 @@ public class HttpFileDownloader {
         return connection.getInputStream();
     }
 
-    private static HttpURLConnection getHttpURLConnection(String urlString) throws IOException {
+    public static HttpURLConnection getHttpURLConnection(String urlString) throws IOException {
         URL url = new URL(urlString);
 
         // Проверка протокола
