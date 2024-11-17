@@ -17,13 +17,14 @@ import lombok.Getter;
 
 public class LogReader {
     private final LogParser parser;
-    @Getter public static List<String> logFilesPaths = new ArrayList<>(); // Хранение путей лог-файлов
+    @Getter public final List<String> processedFiles = new ArrayList<>(); // Хранение путей лог-файлов
 
     public LogReader(LogParser parser) {
         this.parser = parser;
     }
 
     public List<LogEntry> readLogs(String filePath) throws IOException {
+        processedFiles.clear(); // Очищаем список перед началом обработки
         if (new File(filePath).isDirectory()) {
             try (Stream<Path> paths = Files.walk(Paths.get(filePath))) {
                 return paths
@@ -31,6 +32,7 @@ public class LogReader {
                     .filter(path -> path.toString().endsWith(".log"))
                     .flatMap(path -> {
                         try {
+                            processedFiles.add(path.getFileName().toString()); // Добавляем имя файла
                             return readFromFile(path.toString()).stream();
                         } catch (IOException e) {
                             throw new UncheckedIOException(e);
@@ -39,6 +41,7 @@ public class LogReader {
                     .toList();
             }
         } else {
+            processedFiles.add(new File(filePath).getName()); // Добавляем имя файла
             return readFromFile(filePath);
         }
     }

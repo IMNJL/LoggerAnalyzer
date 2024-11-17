@@ -4,6 +4,7 @@ import backend.academy.logs.core.LogEntry;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class LogAnalyzer {
@@ -79,5 +80,24 @@ public class LogAnalyzer {
                 (e1, e2) -> e1,
                 LinkedHashMap::new // Сохраняем порядок по коду ответа
             ));
+    }
+
+    public long getMaxResponseSize() {
+        return logs.stream()
+            .mapToLong(LogEntry::size)
+            .max()
+            .orElse(0);
+    }
+
+    public long getUniqueIpCount() {
+        return logs.stream()
+            .map(LogEntry::ip)
+            .distinct()
+            .count();
+    }
+    public List<LogEntry> filterLogs(Predicate<LogEntry> filter) {
+        return logs.stream()
+            .filter(filter)
+            .toList();
     }
 }

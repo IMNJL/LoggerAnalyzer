@@ -5,6 +5,7 @@ import backend.academy.logs.core.LogParser;
 import backend.academy.logs.core.LogReader;
 import backend.academy.logs.utils.CommandLineArgs;
 import backend.academy.logs.utils.ReportGenerator;
+import java.util.Collections;
 import lombok.experimental.UtilityClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,9 +51,11 @@ public class Main {
                 LogAnalyzer analyzer = new LogAnalyzer(reader.readLogs(path));
 
                 if (ADOC.equalsIgnoreCase(format)) {
-                    ReportGenerator.generateAsciiDocReport(analyzer);
+                    ReportGenerator.generateAsciiDocReport(analyzer, Collections
+                        .unmodifiableList(reader.processedFiles()));
                 } else {
-                    ReportGenerator.generateMarkdownReport(analyzer);
+                    ReportGenerator.generateMarkdownReport(analyzer, Collections
+                        .unmodifiableList(reader.processedFiles()));
                 }
 
             } catch (Exception e) {
