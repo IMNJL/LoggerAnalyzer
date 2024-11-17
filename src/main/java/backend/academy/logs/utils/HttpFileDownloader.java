@@ -1,9 +1,12 @@
 package backend.academy.logs.utils;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import lombok.experimental.UtilityClass;
 
+@UtilityClass
 public class HttpFileDownloader {
         public static InputStream downloadAsStream(String urlString) throws IOException {
         URL url = new URL(urlString);

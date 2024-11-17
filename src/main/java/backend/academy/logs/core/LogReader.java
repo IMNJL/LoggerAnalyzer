@@ -1,14 +1,20 @@
 package backend.academy.logs.core;
 
-import backend.academy.logs.analyzer.Config;
 import backend.academy.logs.utils.HttpFileDownloader;
-import lombok.Getter;
-
-import java.io.*;
-import java.nio.file.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
+import lombok.Getter;
 
 public class LogReader {
     private final LogParser parser;
@@ -40,8 +46,8 @@ public class LogReader {
 
     private List<LogEntry> readFromFile(String filePath) throws IOException {
         try (BufferedReader reader = filePath.startsWith("http")
-            ? new BufferedReader(new InputStreamReader(HttpFileDownloader.downloadAsStream(filePath)))
-            : new BufferedReader(new FileReader(filePath))) {
+            ? new BufferedReader(new InputStreamReader(HttpFileDownloader.downloadAsStream(filePath), StandardCharsets.UTF_8))
+            : new BufferedReader(new InputStreamReader(Files.newInputStream(Paths.get(filePath)), StandardCharsets.UTF_8))) {
 
             return reader.lines()
                 .map(parser::parse)   // Парсим каждую строку

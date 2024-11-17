@@ -1,13 +1,15 @@
-package backend.academy.logs.core;
+package backend.academy.logs.analyzer;
 
-import java.util.Comparator;
+import backend.academy.logs.core.LogEntry;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.LinkedHashMap;
-import java.util.OptionalDouble;
 import java.util.stream.Collectors;
 
 public class LogAnalyzer {
+    private static final int MAX_PERCENT = 100;
+    private static final double MAX_PERCENT_D = 100.0;
+    private static final int MAX_SIZE = 10;
     private final List<LogEntry> logs;
 
     public LogAnalyzer(List<LogEntry> logs) {
@@ -30,7 +32,7 @@ public class LogAnalyzer {
 //     Расчет N-го процентиля размера ответа сервера
     public double getResponseSizePercentile(int percentile) {
         // Проверяем корректность ввода
-        if (logs.isEmpty() || percentile <= 0 || percentile > 100) {
+        if (logs.isEmpty() || percentile <= 0 || percentile > MAX_PERCENT) {
             return Double.NaN; // Возвращаем NaN как обозначение некорректного результата
         }
 
@@ -41,7 +43,7 @@ public class LogAnalyzer {
             .toList(); // Преобразуем в неизменяемый список
 
         // Вычисляем индекс перцентиля
-        int index = (int) Math.ceil((percentile / 100.0) * sortedSizes.size()) - 1;
+        int index = (int) Math.ceil((percentile / MAX_PERCENT_D) * sortedSizes.size()) - 1;
 
         // Гарантируем, что индекс корректен
         index = Math.max(0, Math.min(index, sortedSizes.size() - 1));
@@ -56,7 +58,7 @@ public class LogAnalyzer {
             .collect(Collectors.groupingBy(LogEntry::request, Collectors.counting()))
             .entrySet().stream()
             .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
-            .limit(10)
+            .limit(MAX_SIZE)
             .collect(Collectors.toMap(
                 Map.Entry::getKey,
                 Map.Entry::getValue,

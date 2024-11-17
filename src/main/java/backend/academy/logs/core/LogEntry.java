@@ -13,7 +13,9 @@ public class LogEntry {
     private final String referer;
     private final String userAgent;
 
-    public LogEntry(String ip, String timestamp, String request, int status, int size, String referer, String userAgent) {
+    public LogEntry(String ip, String timestamp,
+        String request, int status,
+        int size, String referer, String userAgent) {
         this.ip = ip;
         this.timestamp = timestamp;
         this.request = request;
