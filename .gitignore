@@ -16,6 +16,11 @@ dependency-reduced-pom.xml
 *.iml
 *.ipr
 
+.dist
+.DS_Store/
+.DS_Store
+
+
 ### Scala SBT
 .bsp
 
