@@ -10,7 +10,7 @@ public class LogParser {
     private static final int STATUS = 4;
     private static final int SIZE = 5;
     private static final int REFERER = 6;
-    private static final int USERAGENT = 6;
+    private static final int USERAGENT = 7;
     private static final Pattern LOG_PATTERN = Pattern.compile(
         "^(\\S+) \\S+ \\S+ \\[(.+?)] \"(.+?)\" (\\d{3}) (\\d+) \"(.*?)\" \"(.*?)\"$"
     );
