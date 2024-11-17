@@ -3,7 +3,6 @@ package backend.academy.logs.core;
 import backend.academy.logs.utils.HttpFileDownloader;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
@@ -46,8 +45,10 @@ public class LogReader {
 
     private List<LogEntry> readFromFile(String filePath) throws IOException {
         try (BufferedReader reader = filePath.startsWith("http")
-            ? new BufferedReader(new InputStreamReader(HttpFileDownloader.downloadAsStream(filePath), StandardCharsets.UTF_8))
-            : new BufferedReader(new InputStreamReader(Files.newInputStream(Paths.get(filePath)), StandardCharsets.UTF_8))) {
+            ? new BufferedReader(new InputStreamReader(HttpFileDownloader
+            .downloadAsStream(filePath), StandardCharsets.UTF_8))
+            : new BufferedReader(new InputStreamReader(Files
+            .newInputStream(Paths.get(filePath)), StandardCharsets.UTF_8))) {
 
             return reader.lines()
                 .map(parser::parse)   // Парсим каждую строку

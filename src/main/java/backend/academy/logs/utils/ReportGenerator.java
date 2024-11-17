@@ -16,10 +16,10 @@ import static backend.academy.logs.utils.Config.getStatusName;
 public class ReportGenerator {
     private static final int PERCENTILE = 95;
 
-        public static void generateMarkdownReport(LogAnalyzer analyzer) throws IOException {
-            Path outputPath = Paths.get(CommandLineConfig.markdownPath()).normalize();
+    public static void generateMarkdownReport(LogAnalyzer analyzer) throws IOException {
+        Path outputPath = Paths.get(CommandLineConfig.markdownPath()).normalize();
 
-            try (BufferedWriter writer = Files.newBufferedWriter(outputPath, StandardCharsets.UTF_8)) {
+        try (BufferedWriter writer = Files.newBufferedWriter(outputPath, StandardCharsets.UTF_8)) {
             // Раздел: Общая информация
             writer.write(String.format("#### Общая информация%n%n"));
             writer.write(String.format("| %-21s | %-16s |%n", "Метрика", "Значение"));
@@ -35,7 +35,7 @@ public class ReportGenerator {
 
             // Раздел: Запрашиваемые ресурсы
             writer.write(String.format("%n#### Запрашиваемые ресурсы%n%n"));
-            writer.write(String.format("| %-33s | %-12s |%n", "Ресурс", "Количество"));
+            writer.write(String.format("| %-33s | %-12s |%n", "Ресурс", "Количеcтво"));
             writer.write("|:---------------------------------:|-------------:|%n");
             for (Map.Entry<String, Long> entry : analyzer.getMostFrequentResources().entrySet()) {
                 writer.write(String.format("| %-33s | %,12d |%n", entry.getKey(), entry.getValue()));
@@ -52,9 +52,9 @@ public class ReportGenerator {
         }
     }
 
-        public static void generateAsciiDocReport(LogAnalyzer analyzer) throws IOException {
-            Path outputPath = Paths.get(CommandLineConfig.asciidocPath()).normalize();
-            try (BufferedWriter writer = Files.newBufferedWriter(outputPath, StandardCharsets.UTF_8)) {
+    public static void generateAsciiDocReport(LogAnalyzer analyzer) throws IOException {
+        Path outputPath = Paths.get(CommandLineConfig.asciidocPath()).normalize();
+        try (BufferedWriter writer = Files.newBufferedWriter(outputPath, StandardCharsets.UTF_8)) {
             // Раздел: Общая информация
             writer.write(String.format("== Общая информация%n%n"));
             abzac(writer);
@@ -99,37 +99,5 @@ public class ReportGenerator {
 
     private static void abzac(BufferedWriter writer) throws IOException {
         writer.write("|===\n");
-    }
-
-    /**
-     * Валидирует и нормализует путь для записи файла.
-     *
-     * @param outputPath путь, предоставленный пользователем.
-     * @return нормализованный путь.
-     * @throws IOException если путь недопустим.
-     */
-    // Пример: получение пути из конфигурации
-    private static final String BASE_DIR = System.getenv("ALLOWED_DIRECTORY");
-
-    private static Path validateOutputPath(String outputPath) throws IOException {
-        if (outputPath == null || outputPath.isBlank()) {
-            throw new IOException("Путь для записи не может быть null или пустым");
-        }
-
-        Path path = Paths.get(outputPath).normalize();
-        if (path == null) {
-            throw new IOException(STR."Не удалось нормализовать путь: \{outputPath}");
-        }
-
-        Path allowedDirectory = Paths.get(BASE_DIR).normalize();
-        if (!path.startsWith(allowedDirectory)) {
-            throw new IOException(STR."Недопустимый путь для записи файла: \{outputPath}");
-        }
-
-        if (!Files.exists(path.getParent())) {
-            Files.createDirectories(path.getParent());
-        }
-
-        return path;
     }
 }

@@ -4,7 +4,6 @@ import backend.academy.logs.analyzer.LogAnalyzer;
 import backend.academy.logs.core.LogParser;
 import backend.academy.logs.core.LogReader;
 import backend.academy.logs.utils.CommandLineArgs;
-import backend.academy.logs.utils.CommandLineConfig;
 import backend.academy.logs.utils.ReportGenerator;
 import lombok.experimental.UtilityClass;
 import org.slf4j.Logger;
@@ -43,7 +42,7 @@ public class Main {
         }
         if (!ADOC.equalsIgnoreCase(format) && !MARKDOWN.equalsIgnoreCase(format)) {
             LOGGER.error("Ошибка: Параметр '--format' должен быть '.adoc' или '.markdown'!");
-        } else
+        } else {
             try {
                 // процессинг
                 LogParser parser = new LogParser();
@@ -57,8 +56,9 @@ public class Main {
                 }
 
             } catch (Exception e) {
-                LOGGER.error("Произошла ошибка: {}", e.getMessage(), e);
+                LOGGER.error("Произошла ошибка...пупупу... {}", e.getMessage());
             }
+        }
         LOGGER.info("Документ успешно создан");
     }
 }
