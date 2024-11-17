@@ -21,7 +21,7 @@ public class Main {
         start();
     }
 
-    private static void start() {
+    protected static void start() {
         // Получаем значения аргументов
         String path = CommandLineArgs.get("path");
         String format = CommandLineArgs.get("format");
