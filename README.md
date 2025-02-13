@@ -1,4 +1,4 @@
-# Инструкции по работе с GitHub Classroom – в разделе "Домашние задания" информационного блока.
+# Проект 3 - Анализатор логов
 
 ## Описание задачи
 
@@ -68,3 +68,15 @@
 | 200 | OK | 8000 |
 | 404 | Not Found | 1000 |
 | 500 | Internal Server Error | 500 |
+
+
+# Пример запуска программы
+
+```
+analyzer --path logs/2024* --from 2024-08-31 --format markdown
+analyzer --path https://raw.githubusercontent.com/elastic/examples/master/Common%20Data%20Formats/nginx_logs/nginx_logs --format adoc
+analyzer --path logs/**/2024-08-31.txt
+```
+
+
+
