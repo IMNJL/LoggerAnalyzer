@@ -74,9 +74,9 @@ ps. Одновременно должен работать с ссылкой и 
 # Пример запуска программы
 
 ```
-analyzer --path logs/2024* --from 2024-08-31 --format markdown
-analyzer --path https://raw.githubusercontent.com/elastic/examples/master/Common%20Data%20Formats/nginx_logs/nginx_logs --format adoc
-analyzer --path logs/**/2024-08-31.txt
+--path logs/2024* --from 2024-08-31 --format markdown
+--path https://raw.githubusercontent.com/elastic/examples/master/Common%20Data%20Formats/nginx_logs/nginx_logs --format adoc
+--path logs/**/2024-08-31.txt
 ```
 
 
